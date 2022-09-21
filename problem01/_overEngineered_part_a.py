@@ -61,9 +61,14 @@ for i in range(num_steps):
 
 #################################################################################################
 
-f = open("a-commands.txt",'w')
 for time,command in commands.items():
-    f.write(f"time:{round(time,2)} x:{round(command['x'],3)}, y:{round(command['y'],3)}, ω:{round(command['ω'],3)}, power-left:{format(command['power-l'],'.2%')}, power-right:{format(command['power-r'],'.2%')}\n")
+### Print Commands ###
+f = open("part_a_commands.md",'w')
+f.write('time(sec)|x-pos(cm)|y-pos(cm)|omega(rad)|left_vel(m/s)|right_vel(m/s)|\n')
+f.write('-|-|-|-|-|-\n')
+for c in commands:
+    f.write(f'{str(c)}\n')
+
 f.close()
 
 circle_boundary_out = plt.Circle((0,0), radius=circle_size/2+vehicle_width/2, color='r', linestyle='--', fill=False)
