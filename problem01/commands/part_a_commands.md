@@ -1,4 +1,4 @@
-time(sec)|left_vel(m/s)|right_vel(m/s)|x-pos(cm)|y-pos(cm)|omega(rad)
+time(sec)|left_vel(m/s)|right_vel(m/s)|x-pos(cm)|y-pos(cm)|omega(rad/sec)
 -|-|-|-|-|-
 0.0|0|0|0.0|0.0|0.0
 0.1|800|800|0.0|80.0|0.0

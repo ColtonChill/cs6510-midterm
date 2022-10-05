@@ -1,5 +1,4 @@
-from math import sin, cos, acos, pi
-from tkinter import Y
+from math import sin, cos, tan, atan, pi
 import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots(figsize=(10,10))
@@ -7,10 +6,10 @@ fig, ax = plt.subplots(figsize=(10,10))
 ##########################################################################################33
 
 class command:
-    def __init__(self,time,left_vel,right_vel,x,y,omega) -> None:
+    def __init__(self,time,v_r,alpha,x,y,omega) -> None:
         self.time =  time
-        self.l = left_vel
-        self.r = right_vel
+        self.v_r = v_r
+        self.alpha = alpha
         self.x = x
         self.y = y
         self.omega = omega
@@ -19,22 +18,23 @@ class command:
         return self.__str__()
 
     def __str__(self) -> str:
-        return f'{self.time}|{self.l}|{self.r}|{self.x}|{self.y}|{self.omega}'
+        return f'{self.time}|{self.v_r}|{self.alpha}|{self.x}|{self.y}|{self.omega}'
 
 
-def step(v_l, v_r, x0, y0, theta0, dt=0.1):
-    global robot_width, cur_time, path, commands
-    x = x0 - (v_r+v_l)/2*sin(theta0)*dt
-    y = y0 + (v_r+v_l)/2*cos(theta0)*dt
-    omega = (v_r-v_l)/robot_width
+def step(v_r, alpha, x0, y0, theta0, dt=0.1):
+    global robot_len, cur_time, path, commands
+    x = x0 - v_r*sin(theta0)*dt
+    y = y0 + v_r*cos(theta0)*dt
+    omega = v_r/robot_len*tan(alpha)
     theta = theta0 + omega*dt
+    # logging
     path.append((x,y))
-    commands.append(command(cur_time,v_l,v_r,x,y,omega))
+    commands.append(command(cur_time,v_r,alpha,x,y,omega))
     cur_time = round(dt+cur_time,2)
     return (x,y),theta
 
 circle_size = 500
-circle_radius = 500
+circle_radius = 250
 dt = 0.1
 cur_time = 0.0
 
@@ -57,28 +57,26 @@ Game plan:
     3) Drive around the circle
 """
 # initial pos
-pos, theta = step(v_l=0,v_r=0,x0=pos[0],y0=pos[1],theta0=theta)
+pos, theta = step(v_r=0,alpha=0,x0=pos[0],y0=pos[1],theta0=theta)
 
 ### 1) Drive up to the circle
 # first, cal the time
 time = round((circle_size/2) / (vel*dt))
 # go that long
-for i in range(time):
-    pos, theta = step(v_l=vel,v_r=vel,x0=pos[0],y0=pos[1],theta0=theta)
+for i in range(time-1):
+    pos, theta = step(v_r=vel,alpha=0,x0=pos[0],y0=pos[1],theta0=theta)
+
 
 ### 2) Turn
 arc_len = robot_width/2*pi/2
 power = arc_len/(vel*dt)
-pos, theta = step(v_l=-vel*power,v_r=vel*power,x0=pos[0],y0=pos[1],theta0=theta)
+pos, theta = step(v_r=vel,alpha=pi/(3.085),x0=pos[0],y0=pos[1],theta0=theta)
+
 
 ### 3) Drive around the circle
-# % = 1 - w/r
-ratio = (1-robot_width/(250+robot_width/3))
-v_r = (2*vel)/(ratio+1)
-v_l = v_r * ratio
-theta += (v_r-v_l)/robot_width*dt/2
+alpha = atan(robot_len/circle_radius)
 while theta < 5/2*pi:
-    pos, theta = step(v_l=v_l,v_r=v_r,x0=pos[0],y0=pos[1],theta0=theta)
+    pos, theta = step(v_r=vel,alpha=alpha,x0=pos[0],y0=pos[1],theta0=theta)
 
 #######################################################################################################################
 
@@ -89,15 +87,27 @@ ax.add_patch(circle_boundary_out)
 ax.add_patch(robot_center)
 ax.add_patch(circle_boundary_in)
 
+
 ### Print Commands ###
-f = open('part_a_commands.md','w')
-f.write('time(sec)|left_vel(m/s)|right_vel(m/s)|x-pos(cm)|y-pos(cm)|omega(rad)\n')
+f = open('commands/part_b_commands.md','w')
+f.write('time(sec)|left_vel(m/s)|right_vel(m/s)|x-pos(cm)|y-pos(cm)|omega(rad/sec)\n')
 f.write('-|-|-|-|-|-\n')
 for c in commands:
     f.write(f'{str(c)}\n')
 f.close()
 
+
 # (number of sides, style, rotation)
 plt.plot(*zip(*path),linestyle='--', marker='o')
+plt.title("Trajectory Plot (Ackermann)\n")
+plt.xlabel("X pos (cm)")
+plt.ylabel("Y pos (cm)")
+plt.savefig("plots/1b-xy.png")
 
-plt.show()
+
+fig, ax = plt.subplots(figsize=(10,10))
+plt.plot(*zip(*[(c.time,c.omega) for c in commands]),linestyle='--', marker='o')
+plt.title("Trajectory Plot (Ackermann)\n")
+plt.xlabel("Time_step (sec)")
+plt.ylabel("Omega (rad/sec)")
+plt.savefig("plots/1b-omega.png")
