@@ -34,7 +34,7 @@ def step(v_l, v_r, x0, y0, theta0, dt=0.1):
     return (x,y),theta
 
 circle_size = 500
-circle_radius = 500
+circle_radius = 250
 dt = 0.1
 cur_time = 0.0
 
@@ -90,14 +90,24 @@ ax.add_patch(robot_center)
 ax.add_patch(circle_boundary_in)
 
 ### Print Commands ###
-f = open('part_a_commands.md','w')
-f.write('time(sec)|left_vel(m/s)|right_vel(m/s)|x-pos(cm)|y-pos(cm)|omega(rad)\n')
+f = open('commands/part_a_commands.md','w')
+f.write('time(sec)|left_vel(m/s)|right_vel(m/s)|x-pos(cm)|y-pos(cm)|omega(rad/sec)\n')
 f.write('-|-|-|-|-|-\n')
 for c in commands:
     f.write(f'{str(c)}\n')
 f.close()
 
-# (number of sides, style, rotation)
+# X,Y Pos Plot
 plt.plot(*zip(*path),linestyle='--', marker='o')
+plt.title("X,Y Position Plot (skid steer)\n")
+plt.xlabel("X pos (cm)")
+plt.ylabel("Y pos (cm)")
+plt.savefig("plots/1a-xy.png")
 
-plt.show()
+# omega Pos Plot
+fig, ax = plt.subplots(figsize=(10,10))
+plt.plot(*zip(*[(c.time,c.omega) for c in commands]),linestyle='--', marker='o')
+plt.title("Trajectory Plot (skid steer)\n")
+plt.xlabel("Time_step (sec)")
+plt.ylabel("Omega (rad/sec)")
+plt.savefig("plots/1a-omega.png")
