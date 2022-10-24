@@ -1,11 +1,12 @@
 from agent import Cartpole_Agent
 from tqdm import tqdm
+from random import randint
 import matplotlib.pylab as plt
 from cartpoleEnv import CartPoleEnv
 
 env = CartPoleEnv(render_mode="rgb_array")
 exp_replay_size = 256
-agent = Cartpole_Agent(seed=1423, 
+agent = Cartpole_Agent(seed=randint(0,10000), 
                   layer_sizes=[env.observation_space.shape[0], 64, env.action_space.n], 
                   lr=1e-3, 
                   sync_freq=5,
@@ -13,7 +14,7 @@ agent = Cartpole_Agent(seed=1423,
 
 # Main training loop
 losses_list, reward_list, episode_len_list, epsilon_list = [], [], [], []
-episodes = 10000
+episodes = 20000
 epsilon = 1  # exploration rate
 
 # initialize experience replay
@@ -45,7 +46,7 @@ for i in tqdm(range(episodes)):
             for j in range(4):
                 loss = agent.train(batch_size=16)
                 losses += loss
-    if epsilon > 0.05: epsilon -= (1 / episodes)
+    if epsilon > 0.05: epsilon -= (1/10000 * 2)
 
     # track graphs
     losses_list.append(losses / ep_len)
