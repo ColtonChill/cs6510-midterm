@@ -1,2 +1,5 @@
 *.txt
 **/__pycache__/
+*.zip
+*.vscode
+*_*
