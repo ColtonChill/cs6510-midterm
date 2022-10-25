@@ -6,7 +6,6 @@ import torch
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-import random
 
 class PolicyNN(torch.nn.Module):
     def __init__(self, obs_space, act_space):
