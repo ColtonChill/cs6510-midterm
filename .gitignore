@@ -2,4 +2,4 @@
 **/__pycache__/
 *.zip
 *.vscode
-*_*
+_*
