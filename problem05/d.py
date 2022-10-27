@@ -1,4 +1,3 @@
-from d_utils.cheetahEnv import HalfCheetahEnv 
 from d_utils.ddpg import DDPG
 from d_utils.memory import Memory
 
@@ -10,16 +9,21 @@ import torch
 
 
 def main():
-    env = HalfCheetahEnv()
+    env = gym.make("HalfCheetahCustom-v0", render_mode="rgb_array")
 
     action_space = env.action_space.shape[0]
     state_space = env.observation_space.shape[0]
 
     model = DDPG(state_space, action_space)
 
+    if str(model.device) != "cuda:0":
+        print("\nTHIS WILL TAKE SUPER DUPER LONG WITHOUT CUDA, PLEASE USE A CUDA-CAPABLE DEVICE")
+        print("\n\n\n... but if you insist....\n")
+        
 
-    MAX_ITERATIONS = 5000
-    LOGGING_ITERATIONS = 250 
+
+    MAX_ITERATIONS = 50
+    LOGGING_ITERATIONS = 10 
     learning = []
     memory = Memory()
 
@@ -30,9 +34,10 @@ def main():
         state, _ = env.reset()
 
         if i%LOGGING_ITERATIONS == 0:
-            rec = gym.wrappers.monitoring.video_recorder.VideoRecorder(env, "cheetah_vids")
+            rec = gym.wrappers.monitoring.video_recorder.VideoRecorder(env, f"cheetah_vids/{i}.mp4")
 
         steps = 0
+        
         while not done:
             action = model.predict(np.expand_dims(state, axis=0))
 
@@ -52,6 +57,7 @@ def main():
                     model.update(memory, 256)
 
         learning.append(cumulative_rewards)
+        model.update_randomness() # decay randomness of model
         
 
         if i%LOGGING_ITERATIONS == 0:

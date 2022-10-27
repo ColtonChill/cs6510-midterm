@@ -4,6 +4,12 @@ import torch.nn.functional as F
 import numpy as np
 import os
 
+"""
+This neural network rendition of the actor-critic model is drawn from
+
+https://github.com/JL321/PolicyGradients-torch/tree/master
+"""
+
 class Actor(nn.Module):
     def __init__(self, state_space, action_space):
         super(Actor, self).__init__()
@@ -67,13 +73,19 @@ class DDPG():
         self.critOptimizer = torch.optim.Adam(self.critic.parameters(), lr=1e-3, weight_decay=0.005)
         self.actOptimizer = torch.optim.Adam(self.actor.parameters(), lr=1e-4, weight_decay=0.005)
         self.loss = nn.MSELoss()
+        self.randomness = 1.00
+        self.randDecay = 0.995
+        self.minRandomness = 0.01
         self.gamma = 0.99
         self.rho = 0.001
 
     def predict(self, state):
+        self.actor.eval()
         state = torch.from_numpy(state).float().to(self.device)
-        pred = self.actor(state).detach()
-        return pred.numpy()[0]
+        pred = self.actor(state).detach().to(self.device)
+        if np.random.rand() <= self.randomness:
+           pred += self.randomness * self.exploreDistribution.sample().to(self.device)
+        return pred.cpu().numpy()[0]
 
     def update(self, replay, batch_count):
         self.actor.train()
@@ -103,6 +115,11 @@ class DDPG():
         for i, j in zip(self.targetCritic.parameters(), self.critic.parameters()):
             i.data *= (1-self.rho)
             i.data += self.rho*j.data
+
+    def update_randomness(self):
+        self.randomness *= self.randDecay
+        if self.randomness <= self.minRandomness:
+            self.randomness = self.minRandomness
 
     def save(self, path='models/DDPG'):
         if 'models' in path and os.path.isdir('models') is False:

@@ -5,6 +5,14 @@ from gym import utils
 from gym.envs.mujoco.mujoco_env import MuJocoPyEnv
 from gym.spaces import Box
 
+"""
+This code taken from:
+
+https://github.com/openai/gym/blob/master/gym/envs/mujoco/half_cheetah.py
+
+Only the observation_space was changed in order to comply with pi movement on the hip motor
+"""
+
 
 class HalfCheetahEnv(MuJocoPyEnv, utils.EzPickle):
     metadata = {
@@ -17,6 +25,7 @@ class HalfCheetahEnv(MuJocoPyEnv, utils.EzPickle):
     }
 
     def __init__(self, **kwargs):
+        self.current_steps = 0
         observation_space = Box(
             low=np.array([-np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -math.pi, -np.inf, -np.inf, -np.inf, -np.inf]),
             high=np.array([np.inf, np.inf, np.inf, np.inf, np.inf, np.inf, np.inf, np.inf, np.inf, np.inf, np.inf, np.inf, math.pi, np.inf, np.inf, np.inf, np.inf, ]), 
@@ -35,7 +44,8 @@ class HalfCheetahEnv(MuJocoPyEnv, utils.EzPickle):
         reward_ctrl = -0.1 * np.square(action).sum()
         reward_run = (xposafter - xposbefore) / self.dt
         reward = reward_ctrl + reward_run
-        terminated = False
+        self.current_steps += 1
+        terminated = self.current_steps > self.spec.max_episode_steps
 
         if self.render_mode == "human":
             self.render()
@@ -60,6 +70,7 @@ class HalfCheetahEnv(MuJocoPyEnv, utils.EzPickle):
             low=-0.1, high=0.1, size=self.model.nq
         )
         qvel = self.init_qvel + self.np_random.standard_normal(self.model.nv) * 0.1
+        self.current_steps = 0
         self.set_state(qpos, qvel)
         return self._get_obs()
 
