@@ -1,5 +1,5 @@
-*.txt
 **/__pycache__/
 *.zip
 *.vscode
 _*
+problem08/archive/
