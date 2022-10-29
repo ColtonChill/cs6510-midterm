@@ -71,9 +71,9 @@ class PlantDataset(torch.utils.data.Dataset):
 
         return name,img,label
 
-class NN(nn.Module):
+class CNN(nn.Module):
     def __init__(self, input_size, output_size):
-        super(NN, self).__init__()
+        super(CNN, self).__init__()
 	    # 3 input image channel, 6 output channels, 
 	    # 5x5 square convolution kernel
         width, height = input_size[:2]
@@ -93,6 +93,7 @@ class NN(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
+
 
 """
 4: 3 x 512 x 512

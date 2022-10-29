@@ -3,3 +3,4 @@
 *.vscode
 _*
 problem08/archive/
+*.weights
