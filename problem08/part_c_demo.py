@@ -1,5 +1,5 @@
-from tqdm import tqdm
 from utils import *
+import sys
 
 
 data_path = os.path.join(os.getcwd(),"validation_imgs")
@@ -21,8 +21,18 @@ testloader = torch.utils.data.DataLoader(test, batch_size=16, shuffle=False, num
 
 classes = ['crop', 'weed']
 
-net = CNN(input_size=(512,512,3), output_size=2)
-net.load_state_dict(torch.load('generic_net.pth'))
+net = torchvision.models.alexnet(pretrained=True)
+if len(sys.argv)<2:
+    load_model = True
+elif sys.argv[1]=="retrained":
+    load_model = True
+elif sys.argv[1]=='untrained':
+    load_model = False
+else:
+    print(f'Error: Unknown option "{sys.argv[1]}", please use "retrained" or "untrained".')
+    sys.exit(0)
+
+if load_model: net.load_state_dict(torch.load('alexnet.pth'))
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)

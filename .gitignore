@@ -4,3 +4,4 @@
 _*
 problem08/archive/
 *.weights
+alexnet.pth

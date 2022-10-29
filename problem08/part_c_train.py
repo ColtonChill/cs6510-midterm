@@ -1,5 +1,6 @@
 from tqdm import tqdm
 from utils import *
+import sys
 
 
 data_path = os.path.join(os.getcwd(),"archive/agri_data/data")
@@ -27,17 +28,27 @@ testloader = torch.utils.data.DataLoader(test, batch_size=16, shuffle=False, num
 
 classes = ['crop', 'weed']
 
-net = CNN(input_size=(512,512,3), output_size=2)
+if len(sys.argv)<2:
+    pretrain = True
+elif sys.argv[1]=="pretrained":
+    pretrain = True
+elif sys.argv[1]=='untrained':
+    pretrain = False
+else:
+    print(f'Error: Unknown option "{sys.argv[1]}", please use "pretrained" or "untrained".')
+    sys.exit(0)
+
+net = torchvision.models.alexnet(pretrained=pretrain)
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 
-for epoch in range(20):  # loop over the dataset multiple times
+for epoch in range(2):  # loop over the dataset multiple times
     running_loss = 0.0
     with tqdm(trainloader, unit="batch") as tepoch:
         for name, imgs, labels in tepoch:
-        # zero the parameter gradients
+            # zero the parameter gradients
             optimizer.zero_grad()
             # forward + backward + optimize
             outputs = net(imgs)
@@ -46,10 +57,10 @@ for epoch in range(20):  # loop over the dataset multiple times
             optimizer.step()
             # print statistics
             running_loss += loss.item()
-        
-    # prepare to count predictions for each class
-    correct_pred = {classname: 0 for classname in classes}
-    total_pred = {classname: 0 for classname in classes}
+
+        # prepare to count predictions for each class
+        correct_pred = {classname: 0 for classname in classes}
+        total_pred = {classname: 0 for classname in classes}
 
     # again no gradients needed
     with torch.no_grad():
@@ -70,5 +81,5 @@ for epoch in range(20):  # loop over the dataset multiple times
         print(f'\tAcc for class: {classname} is {accuracy:.2f} %')
 
     
-torch.save(net.state_dict(), 'generic_net.pth')
+torch.save(net.state_dict(), 'alexnet.pth')
 print('Finished Training')
