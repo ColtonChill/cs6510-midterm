@@ -68,10 +68,9 @@ class Arm:
     def choose(self, alt, temp):
         dif = self.score - alt.score
         if dif < 0:
-            return False
-        else:
-            p = exp(-(dif/temp))
-            r = random.random() / 1
+            p = 1/exp(-(dif/temp))
+            r = random.random()
             if r < p:
-                return False
+                return True
+            return False
         return True

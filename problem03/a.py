@@ -1,14 +1,15 @@
 from doctest import script_from_examples
 from math import radians as r, degrees as d
+import sys
 from arm import Arm
 import copy
 
 # Main variables
-MOVE_COUNT = 800
+MOVE_COUNT = 500
 INIT_TEMP = 10000000
-COOLING_RATE = 0.99
+COOLING_RATE = 0.999
 STOP_TEMP = 0.001
-MODS = 80
+MODS = 30
 
 DESTINATION = (1.2, 0.8, 0.5)
 
@@ -37,8 +38,9 @@ arm.generateMoves(MOVE_COUNT)
 def setScore(a):
     a.score = a.getDistance(DESTINATION)
 
-# Find our initial score
+# Find our initial position and distance from target
 setScore(arm)
+print("Start Position: {0}".format(arm.getPosition()))
 print("Start Distance: {0:.2f}cm".format(arm.score * 100))
 
 # Loop the simulated annealing algorythm
@@ -56,23 +58,26 @@ while temp > STOP_TEMP:
     
     # Adjust the tempurature
     temp *= COOLING_RATE
+    print("\r>> Tempurature: {0:.4f}".format(temp), end = " ")
+    sys.stdout.flush()
 
-# Print the final score
-print("End distance: {0:.2f}cm".format(arm.score * 100))
+# Print the final location and distance from target
+print("\nEnd Position: {0}".format(arm.getPosition()))
+print("End Distance: {0:.2f}cm".format(arm.score * 100))
 
 # Print the angles changes
 delta_t1 = int(d(thetas[1][0] - arm.thetas[1][0]))
 delta_t4 = int(d(thetas[4][0] - arm.thetas[4][0]))
 delta_t5 = int(d(thetas[5][0] - arm.thetas[5][0]))
 delta_t6 = int(d(thetas[6][0] - arm.thetas[6][0]))
-print("Delta t1: {0}°".format(delta_t1))
-print("Delta t4: {0}°".format(delta_t4))
-print("Delta t5: {0}°".format(delta_t5))
-print("Delta t6: {0}°".format(delta_t6))
+print("T1(Total/𝚫): ({0}°/{1}°)".format(delta_t1, delta_t1 % 360 - (360 if delta_t1 < 0 else 0)))
+print("T4(Total/𝚫): ({0}°/{1}°)".format(delta_t4, delta_t4 % 360 - (360 if delta_t4 < 0 else 0)))
+print("T5(Total/𝚫): ({0}°/{1}°)".format(delta_t5, delta_t5 % 360 - (360 if delta_t5 < 0 else 0)))
+print("T6(Total/𝚫): ({0}°/{1}°)".format(delta_t6, delta_t6 % 360 - (360 if delta_t6 < 0 else 0)))
 
 # Print the arm changes
 delta_d2 = (deltas[2][0] - arm.deltas[2][0]) * 100
 delta_d3 = (deltas[3][0] - arm.deltas[2][0]) * 100
-print("Delta d2: {0:.2f}cm".format(delta_d2))
-print("Delts d3: {0:.2f}cm".format(delta_d3))
+print("D2(Total/𝚫): {0:.2f}cm".format(delta_d2))
+print("D3(Total/𝚫): {0:.2f}cm".format(delta_d3))
 print()
