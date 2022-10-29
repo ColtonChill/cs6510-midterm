@@ -31,8 +31,23 @@ python part_b_demo.py
 Be default, rendering of the YOLO boxes is turned on. Press `Q` to close the rendering window for each validation image.
 
 ## Part C
-### Instructions:
 ### Description:
+Much like part A, the classifier here uses the same compressed labeling schema. Rather then using a normal CNN, this part uses a version of Alexnet provided by the pytorch framework. There are options on both `part_c_train.py` and `part_c_demo.py` to highlight the advantages of learning transfer. `part_c_train.py` as the options to pretrain the model with learning transfer (on by default). This can be toggled to highlight the training speed up that results from learning transfer. This option also exists for `part_c_demo.py`, however, it allows the user to toggle between a fine tuned model (generated with the above train code) vs. an only pretrained model. This helps shows that learning transfer is not enough to score well in a new domain.
+
+### Instructions:
+In order to run `part_c_demo.py`, you must either train a new alexnet model (`alexnet.pth`), or download a retrained model [here](https://drive.google.com/file/d/1MDoh_UsTUVMSJOI3n04t2-B-rYf5m3-r/view?usp=share_link), and place it in `problem08/`.
+
+To train the model:
+```py
+python part_c_train.py <pretrained>|<untrained>
+```
+_*Note: The code will default to pretrained (learning transfer) if no option is given._
+
+To demo the model:
+```py
+python part_c_train.py <retrained>|<untrained>
+```
+_*Note: The code will default to retrained (using `alexnet.pth`) if no option is given._
 
 ## Part D
 ### Instructions:
