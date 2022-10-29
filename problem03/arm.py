@@ -11,6 +11,7 @@ class Arm:
         self.deltas = deltas
         self.moves = []
         self.score = 0
+        self.init  = (copy.deepcopy(thetas), copy.deepcopy(deltas))
 
     # This generates a random move
     def generateMove(self):
@@ -24,7 +25,7 @@ class Arm:
         return (key, random.uniform(-0.01, 0.01))
 
     # This initialises the system with a set of random moves
-    def generateMoves(self, count):
+    def initMoves(self, count):
         random.seed(time.time())
         for i in range(count): 
             self.moves.append(self.generateMove())
@@ -59,6 +60,8 @@ class Arm:
     def getAlt(self, mods):
         # Find alternatives
         alt = copy.deepcopy(self)
+        alt.thetas = copy.deepcopy(self.init[0])
+        alt.deltas = copy.deepcopy(self.init[1])
         for i in range(mods):
             altPos = random.randint(0, len(self.moves) - 1)
             alt.moves[altPos] = self.generateMove()
@@ -68,7 +71,7 @@ class Arm:
     def choose(self, alt, temp):
         dif = self.score - alt.score
         if dif < 0:
-            p = 1/exp(-(dif/temp))
+            p = exp(dif/temp)
             r = random.random()
             if r < p:
                 return True

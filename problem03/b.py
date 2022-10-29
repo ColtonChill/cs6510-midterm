@@ -33,7 +33,13 @@ temp = INIT_TEMP
 
 #Sets the score of an arm. TODO: Modify this based on penalty
 def setScore(a):
-    a.score = a.getDistance(DESTINATION) * 10
+    penalty = a.thetas[1][1]
+    penalty += a.thetas[4][1]
+    penalty += a.thetas[5][1]
+    penalty += a.thetas[6][1]
+    penalty += a.deltas[2][1]
+    penalty += a.deltas[3][1]
+    a.score = a.getDistance(DESTINATION) * 10 + penalty
 
 # Find our initial position and distance from target
 arm.initMoves(MOVE_COUNT)
@@ -46,7 +52,7 @@ while temp > STOP_TEMP:
     # Find an alternate solution
     alt = arm.getAlt(MODS)
     
-    # Simulate alternate arm, and find its current score
+    # Simulate alternate arm, and find its final score
     alt.simulate()
     setScore(alt)
 
@@ -61,22 +67,22 @@ while temp > STOP_TEMP:
 
 # Print the final location and distance from target
 print("\nEnd Position: {0}".format(arm.getPosition()))
-print("End Distance: {0:.2f}cm".format(arm.score * 100))
+print("End Distance: {0:.2f}cm".format(arm.getDistance(DESTINATION) * 100))
 
 # Print the angles changes
-print("T1(Total/𝚫): ({0}°/{1}°)".format(
+print("T1(Cumulative/Total): {0}° / {1}°".format(
     int(d(arm.thetas[1][1])), 
     int(d(arm.thetas[1][0] - thetas[1][0]) % 360 - (360 if (arm.thetas[1][0] - thetas[1][0]) < 0 else 0))
 ))
-print("T4(Total/𝚫): ({0}°/{1}°)".format(
+print("T4(Cumulative/Total): {0}° / {1}°".format(
     int(d(arm.thetas[4][1])), 
     int(d(arm.thetas[4][0] - thetas[4][0]) % 360 - (360 if (arm.thetas[4][0] - thetas[4][0]) < 0 else 0))
 ))
-print("T5(Total/𝚫): ({0}°/{1}°)".format(
+print("T5(Cumulative/Total): {0}° / {1}°".format(
     int(d(arm.thetas[5][1])), 
     int(d(arm.thetas[5][0] - thetas[5][0]) % 360 - (360 if (arm.thetas[5][0] - thetas[5][0]) < 0 else 0))
 ))
-print("T6(Total/𝚫): ({0}°/{1}°)".format(
+print("T6(Cumulative/Total): {0}° / {1}°".format(
     int(d(arm.thetas[6][1])), 
     int(d(arm.thetas[6][0] - thetas[6][0]) % 360 - (360 if (arm.thetas[6][0] - thetas[6][0]) < 0 else 0))
 ))
