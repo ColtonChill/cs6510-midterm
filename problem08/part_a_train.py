@@ -27,7 +27,7 @@ testloader = torch.utils.data.DataLoader(test, batch_size=16, shuffle=False, num
 
 classes = ['crop', 'weed']
 
-net = NN(input_size=(512,512,3), output_size=2)
+net = CNN(input_size=(512,512,3), output_size=2)
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
