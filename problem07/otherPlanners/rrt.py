@@ -12,7 +12,7 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 
-show_animation = True
+show_animation = False
 
 
 class RRT:

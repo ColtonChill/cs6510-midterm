@@ -183,6 +183,8 @@ class CartPoleEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
             self.steps_beyond_terminated += 1
             reward = 0.0
         
+        # reward -= math.pow(x/self.x_threshold,2)
+        reward -= abs(x)/(1.0*self.x_threshold)  # 1.2 too weak
         reward -= abs(theta)
 
         if self.render_mode == "human":
