@@ -15,8 +15,12 @@ This problem focuses on the use of ML to compute the inverse kinematics of an ar
 For this problem, we implement a QNN agent to learn a modified cart-pole environment.
 
 ## [Problem 5 - Control and Reinforcement Learning](problem05/)
+This problem focuses on applications of reinforcement learning, using the Cartpole and Half-Cheetah gym environments
+
 ## [Problem 6 - Human Emotions](problem06/)
 ## [Problem 7 - Motion Planning](problem07/)
+This problem focues on pathfinding algorithms, specifically A\*, both in a grid layout and in continuous space using random sampling
+
 ## [Problem 8 - Object Detection](problem08/)
 Here, we use Facebook's `Detectron2` program to implement 3 different R-CNNs and retrain them to find a new object. These models are then tested and measured against each other.
 

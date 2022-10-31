@@ -29,18 +29,24 @@ class HybridAStar:
         Also, sampling from skid-steer model...?
         """
 
-        vehicle = SkidSteer(33, 40, sx, sy, 0)
+        vehicle = SkidSteer(3.3, 4.0, sx, sy, math.pi) # make scaling in 10s of centimeters
 
         start = Node(sx, sy, None)
         goal = Node(gx, gy, None)
 
+        current = start
+
+        G = lambda x: math.sqrt((x.pos[0] - current.pos[0]) ** 2 + (x.pos[1] - current.pos[1]) **2)
+        H = lambda x: math.sqrt((goal.pos[0] - x.pos[0]) ** 2 + (goal.pos[1] - x.pos[1]) **2)
+
+        start.G = G(start)
+        start.H = H(start)
+
         samples = self._sample(self.samples, goal)
 
-        current = start
         self.open.append(samples)
 
         while len(self.open) > 0 and goal.parent is None:
-            print("iterating")
             if self._can_connect(current, goal, vehicle):
                 goal.parent = current
                 break
@@ -52,32 +58,32 @@ class HybridAStar:
                     print(f"did not find goal within {max_samples} samples")
                     break
 
-            # sorting function to find the closest sampling
-            distance = lambda x: math.sqrt((x.pos[0] - current.pos[0]) ** 2 + (x.pos[1] - current.pos[1]) **2)
-
             for sample in samples:
-                sample.G = current.G + distance(sample)
+                sample.G = current.G + G(sample)
 
             F = lambda x: x.G + x.H
 
             samples.sort(key=F)
 
-            idx = 0
             next_node = None
             while next_node is None or not self._can_connect(current, next_node, vehicle):
-                print("iterating through samples")
-                print(next_node)
-                next_node = samples[idx]
-                idx += 1
+                next_node = samples[0]
+                del samples[0]
 
-                if idx >= len(samples):
-                    print("No connecting paths")
-                    return None, None
+                if len(samples) == 0:
+                    if self.num_samples < self.max_samples:
+                        samples = self._sample(self.samples, goal)
+                    else:
+                        print("reached max iterations, exiting")
+                        return None, None
+
+            next_node.parent = current
 
             current = next_node
 
-
-        fullPath = self._path_from_node(goal) 
+        print("found goal")
+        fullPath = self._path_from_node(goal)
+        fullPath.reverse()
         rx = [x.pos[0] for x in fullPath]
         ry = [x.pos[1] for x in fullPath]
 
@@ -86,7 +92,7 @@ class HybridAStar:
         
     def _path_from_node(self, node):
         if node.parent is None:
-            return []
+            return [node]
         return [node] + self._path_from_node(node.parent)
 
 
@@ -125,12 +131,9 @@ class HybridAStar:
         # find path between both nodes
 
         vehicle.pos = node1.pos
-        path, _ = vehicle.move(node2.pos[0], node2.pos[1])
+        path, angle = vehicle.make_path(node2.pos[0], node2.pos[1])
 
-        for pos in path:
-            if vehicle.collision(Node(pos[0], pos[1], None)):
-                return False
-        return True
+        return vehicle.move(path, angle, self.obstacles)
 
 
 
@@ -156,26 +159,99 @@ class SkidSteer:
         self.theta = theta_init
         self.velocity = 5 # m/s (arbitrary)
 
-    def move(self, x, y, resolution=0.1):
+    def make_path(self, x, y, resolution=0.1):
         targetTheta = math.atan2((y - self.pos[1]), (x - self.pos[0]))
         omega = 2 * self.velocity / self.width
         dt = (targetTheta - self.theta) / omega
-        commands = [(self.velocity, -self.velocity, dt)]
-        # now that we're pointing the right direction, go full speed to x and y
+
         dist = math.sqrt((x - self.pos[0]) ** 2 + (y - self.pos[1]) ** 2)
         dt = dist / self.velocity
 
+
         path = []
         for i in range(int(dt/resolution)):
-            path.append((dist/int(dt/resolution) * math.cos(targetTheta), dist/int(dt/resolution) * math.sin(targetTheta)))
-        commands.append((self.velocity, self.velocity, dt))
-        return path, commands
+            path.append((dist/int(dt/resolution) * math.cos(targetTheta) * i, dist/int(dt/resolution) * math.sin(targetTheta) * i))
+        return path, targetTheta
+
+    def move(self, path, theta, obstacles):
+        tempPos = self.pos
+        tempTheta = self.theta
+
+        self.theta = theta
+
+        for p in path:
+            self.pos = (tempPos[0] + p[0], tempPos[1] + p[1])
+            
+            for o in obstacles:
+                if self.collision(o):
+                    self.pos = tempPos
+                    self.theta = tempTheta
+                    return False
+
+        return True
+
+    @property
+    def coordinates(self):
+        # grabbed from https://stackoverflow.com/questions/41898990/find-corners-of-a-rotated-rectangle-given-its-center-point-and-rotation
+        tr_x = self.pos[0] + ((self.width /2) * math.cos(self.theta)) - ((self.length / 2) * math.sin(self.theta))
+        tr_y = self.pos[1] + ((self.width /2) * math.sin(self.theta)) + ((self.length / 2) * math.cos(self.theta))
+
+        tl_x = self.pos[0] - ((self.width /2) * math.cos(self.theta)) - ((self.length / 2) * math.sin(self.theta))
+        tl_y = self.pos[1] - ((self.width /2) * math.sin(self.theta)) + ((self.length / 2) * math.cos(self.theta))
+
+        bl_x = self.pos[0] - ((self.width /2) * math.cos(self.theta)) + ((self.length / 2) * math.sin(self.theta))
+        bl_y = self.pos[1] - ((self.width /2) * math.sin(self.theta)) - ((self.length / 2) * math.cos(self.theta))
+
+        br_x = self.pos[0] + ((self.width /2) * math.cos(self.theta)) + ((self.length / 2) * math.sin(self.theta))
+        br_y = self.pos[1] + ((self.width /2) * math.sin(self.theta)) - ((self.length / 2) * math.cos(self.theta))
+
+        return ((tr_x, tr_y), (tl_x, tl_y), (bl_x, bl_y), (br_x, br_y))
+
 
     def collision(self, node):
-        check_width = node.pos[0] <= self.pos[0] + 0.5 * self.width or node.pos[0] >= self.pos[0] - 0.5 * self.width
-        check_height = node.pos[1] <= self.pos[1] + 0.5 * self.length or node.pos[1] >= self.pos[1] - 0.5 * self.length
-        return check_width or check_height
+        # grabbed from https://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle
+        tr, tl, bl, br = self.coordinates
 
+        distance = lambda x1, x2: math.sqrt((x2[0] - x1[0]) ** 2 + (x2[1] - x1[1]) ** 2)
+
+        # area of rectangle
+        v_area = distance(bl, br) * distance(bl, tl)
+
+        # areas for each triangle; if the sum is greater than size of rectangle, P(x, y) is outside the rectangle
+        apd = abs((tr[0] * (node.pos[1] - br[1]) + node.pos[0] * (br[1] - tr[1]) + br[0] * (tr[1] - node.pos[1]))/2)
+        dpc = abs((br[0] * (node.pos[1] - bl[1]) + node.pos[0] * (bl[1] - br[1]) + bl[0] * (br[1] - node.pos[1]))/2)
+        cpb = abs((bl[0] * (node.pos[1] - tl[1]) + node.pos[0] * (tl[1] - bl[1]) + tl[0] * (bl[1] - node.pos[1]))/2)
+        pba = abs((node.pos[0] * (tl[1] - tr[1]) + tl[0] * (tr[1] - node.pos[1]) + tr[0] * (node.pos[1] - tl[1]))/2)
+
+        return sum([apd, dpc, cpb, pba]) <= v_area
+
+
+
+        
+        '''
+        intercept_lmin = (self.pos[1] - self.width / (2 * math.cos(self.theta))) - math.tan(self.theta) * self.pos[0]                   # y-intercept for min lengthwise functions
+        intercept_lmax = (self.pos[1] - self.width / (2 * math.cos(self.theta))) - math.tan(self.theta) * self.pos[0]                   # y-intercept for max lengthwise functions
+        intercept_wmin = (self.pos[1] - self.length / (2 * math.cos(self.theta))) - math.tan(self.theta) * self.pos[0]                   # y-intercept for min widthwise functions
+        intercept_wmax = (self.pos[1] - self.length / (2 * math.cos(self.theta))) - math.tan(self.theta) * self.pos[0]                   # y-intercept for max widthwise functions
+
+        if self.theta == math.pi/2 or self.theta == -math.pi/2:
+            blmin = lambda x: self.pos[1] - 1/2 * self.length
+            blmax = lambda x: self.pos[1] + 1/2 * self.length
+            bwmin = lambda x: self.pos[0] - 1/2 * self.width
+            bwmax = lambda x: self.pos[0] + 1/2 * self.width
+
+        else:
+            blmin = lambda x: math.tan(self.theta) * x + intercept_lmin     # function for lower bound lengthwise
+            blmax = lambda x: math.tan(self.theta) * x + intercept_lmax     # function for upper bound lengthwise
+            bwmin = lambda x: math.tan(self.theta) * x + intercept_wmin     # function for lower bound widthwise
+            bwmax = lambda x: math.tan(self.theta) * x + intercept_wmax     # function for upper bound widthwise
+
+        check_lengthwise = blmin(node.pos[0]) < node.pos[0] < blmax(node.pos[0])
+        check_widthwise = bwmin(node.pos[0]) < node.pos[1] < bwmax(node.pos[0])
+
+        return self.pos[0] - 1/2 * self.length < node.pos[0] < self.pos[0] + 1/2 * self.length and self.pos[1] - 1/2 * self.width < node.pos[1] < self.pos[1] + 1/2 * self.width
+        '''
+    #return check_widthwise and check_lengthwise
 
 
 
@@ -213,13 +289,17 @@ def main():
         plt.grid(True)
         plt.axis("equal")
 
-    planner = HybridAStar(ox, oy, 60, 10, 1000)
+    planner = HybridAStar(ox, oy, 60, 10, 5000)
     rx, ry = planner.planning(sx, sy, gx, gy)
 
-    if show_animation:  # pragma: no cover
+    if show_animation and rx is not None:  # pragma: no cover
         plt.plot(rx, ry, "-r")
         plt.pause(0.01)
         plt.show()
+
+    if rx is None:
+        print("Hybrid A-Star returned an error")
+
 
 
 if __name__ == '__main__':
