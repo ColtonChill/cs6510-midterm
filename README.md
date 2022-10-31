@@ -1,11 +1,15 @@
 # Midterm - CS 6510
 Jonah Boe, Tyler Conley, Ela Bohlourihajar, and Colton Hill
 
-## Problem 1 - Moving in a car
+## [Problem 1 - Moving in a car](problem01/)
+
+This problem consists for 4 parts, each with a different code snippet found in the above link.
+For an explication and execution instruction, please click on the above link.
+
+Tldr; 
 
 
-
-## Problem 2 - Inverse Kinematics, numerical approaches
+## [Problem 2 - Inverse Kinematics, numerical approaches](problem02/)
 
 ### *Part A*
 The following figure shows the workspace of the robot. All measurments are in (cm).
@@ -57,7 +61,7 @@ python problem02/c.py
 ```
 
 
-## Problem 3 - Inverse Kinematics with numerical approaches
+## [Problem 3 - Inverse Kinematics with numerical approaches](problem03/)
 
 ### *Part A*
 In order to solve this problem we used a genetics algorythm. This algorythm has joint angles as outputs, with proximity to desired endfactor location as feedback for the systems reward function.
@@ -67,3 +71,11 @@ We could then weight the reward function based, adding a penalty for every degre
 
 ### *Part C*
 We could then weight the reward function based on which motors are running the most often, penalizing the ones that consume more power.
+
+## [Problem 4 - Balancing a Pole](problem04/)
+## [Problem 5 - Control and Reinforcement Learning](problem05/)
+## [Problem 6 - Human Emotions](problem06/)
+## [Problem 7 - Motion Planning](problem07/)
+## [Problem 8 - Object Detection](problem08/)
+## Problem 9 - Ethics of Robotics
+This problem solution is comprised solely of tables, figures, and descriptions. No code was needed here and all required information is found in the `Report.pdf`.
