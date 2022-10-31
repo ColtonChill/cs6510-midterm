@@ -1,3 +1,5 @@
+# Problem 8
+
 ## Part A
 
 ### Description:
@@ -50,11 +52,18 @@ python part_c_train.py <retrained>|<untrained>
 _*Note: The code will default to retrained (using `alexnet.pth`) if no option is given._
 
 ## Part D
-### Instructions:
 ### Description:
+Part D takes a large departure from the methodology of the previous 3 parts as this task requires the use of `Detectron2`. Detectron using a rather unique in-house framework build on pytorch with custom dataloader, model paradigms,  training regiments, and evaluation metrics. While quite the pain, this allows us to retrain and work on very powerful algorithms with minimal development overhead.
+
+In this task, 3 models are implemented (Masked, Faster, RetinaNet R-CNN) and retrained to detect a new class of objects (party balloons in this case). Each model is then tested on the validation partition of the dataset.
+
+
+### Instructions:
+Because of the need for a GPU to run `Detectron2`, running code was implemented in Google Colab. The final `.ipynb` file is also included in this repo ([problem08_part_d.ipynb](problem08_part_d.ipynb)), however, the new object dataset and tested implementation is found there. Here is link to that drive should ([Google Colab](https://drive.google.com/drive/folders/1y1VXsz2n4byxgcOcAXxnSQ0V1X1rgsS9?usp=sharing)).
 
 
 ## References
 * Dataloader: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
 * Basic CNN: https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
 * YOLO Implementation: https://github.com/ravirajsinh45/Crop_and_weed_detection
+* Detection2: https://detectron2.readthedocs.io/en/latest/index.html
