@@ -64,29 +64,29 @@ print("\nEnd Position: {0}".format(arm.getPosition()))
 print("End Distance: {0:.2f}cm".format(arm.score * 100))
 
 # Print the angles changes
-print("T1(Total/𝚫): ({0}°/{1}°)".format(
+print("T1(Cumulative/Final): ({0}°/{1}°)".format(
     int(d(arm.thetas[1][1])), 
     int(d(arm.thetas[1][0] - thetas[1][0]) % 360 - (360 if (arm.thetas[1][0] - thetas[1][0]) < 0 else 0))
 ))
-print("T4(Total/𝚫): ({0}°/{1}°)".format(
+print("T4(Cumulative/Final): ({0}°/{1}°)".format(
     int(d(arm.thetas[4][1])), 
     int(d(arm.thetas[4][0] - thetas[4][0]) % 360 - (360 if (arm.thetas[4][0] - thetas[4][0]) < 0 else 0))
 ))
-print("T5(Total/𝚫): ({0}°/{1}°)".format(
+print("T5(Cumulative/Final): ({0}°/{1}°)".format(
     int(d(arm.thetas[5][1])), 
     int(d(arm.thetas[5][0] - thetas[5][0]) % 360 - (360 if (arm.thetas[5][0] - thetas[5][0]) < 0 else 0))
 ))
-print("T6(Total/𝚫): ({0}°/{1}°)".format(
+print("T6(Cumulative/Final): ({0}°/{1}°)".format(
     int(d(arm.thetas[6][1])), 
     int(d(arm.thetas[6][0] - thetas[6][0]) % 360 - (360 if (arm.thetas[6][0] - thetas[6][0]) < 0 else 0))
 ))
 
 # Print the arm changes
-print("D2(Cumulative/Total): {0:.2f}cm / {1:.2f}cm".format(
+print("D2(Cumulative/Final): {0:.2f}cm / {1:.2f}cm".format(
     arm.deltas[2][1] * 100,
     (arm.deltas[2][0] - deltas[2][0]) * 100
 ))
-print("D3(Cumulative/Total): {0:.2f}cm / {1:.2f}cm".format(
+print("D3(Cumulative/Final): {0:.2f}cm / {1:.2f}cm".format(
     arm.deltas[3][1] * 100,
     (arm.deltas[3][0] - deltas[3][0]) * 100
 ))
