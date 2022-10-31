@@ -24,7 +24,7 @@ This YOLO classifier is based off the implementation provided in the assignment 
 
 
 ### Instructions:
-Because of the size of the weight file, it could not be added to this repository. Therefore, you run the following code, please down load [this file](https://drive.google.com/open?id=1-Aam2D-fqnwecbeHwa4rtzxtNjwcDkP6) from the above repository and place it in `YOLO_setup/data/weights/`.
+Because of the size of the weight file, it could not be added to this repository. Therefore, you run the following code, please download [this file](https://drive.google.com/open?id=1-Aam2D-fqnwecbeHwa4rtzxtNjwcDkP6) from the above repository and place it in `YOLO_setup/data/weights/`.
 
 Once the `crop_weed_detection.weights` file is downloaded, the demo code can be run:
 ```py
@@ -49,7 +49,7 @@ To demo the model:
 ```py
 python part_c_train.py <retrained>|<untrained>
 ```
-_*Note: The code will default to retrained (using `alexnet.pth`) if no option is given._
+_*Note: The code will default to using a retrained model (using `alexnet.pth`) if no option is given._
 
 ## Part D
 ### Description:

@@ -12,4 +12,4 @@ python demo.py
 
 ## Description:
 
-The controller code is in `agent.py` while the modified variable parameters are found in `cartpoleEnv.py`. `cartpole-model.pth` is the last generated model. 
+The controller code is in `agent.py` while the modified variable parameters are found in `cartpoleEnv.py`. `cartpole-model.pth` is the last generated model. The agent is a QNN (Q-table neural network) reinforcement learner. The environment comes courtesy of [Open AI's Gym Program](https://github.com/openai/gym). 
