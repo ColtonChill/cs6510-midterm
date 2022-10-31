@@ -28,18 +28,17 @@ while True:
         cv2.rectangle(image,(x,y),(x+w,y+h),(255,255,0),2)  
         rec_gray = gray_img[y:y+h, x:x+w] 
         rec_color = image[y:y+h, x:x+w] 
-    
-        face = image[y:y+h,x:x+w]
+
+        captured_emotions = emotion_detector.detect_emotions(image)
+        for person in captured_emotions:
+            emotions = person['emotions']
+            offset = 20
+            for key in emotions.keys():
+                cv2.putText(img=image, text=(str(key) + ": " + str(emotions[key])), org=(x, y+h+offset), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=.5, color=(0, 255, 0),thickness=1)
+                offset += 20
     cv2.imshow("video", image)
-    
-    captured_emotions = emotion_detector.detect_emotions(image)
-    print(captured_emotions)
 
     if cv2.waitKey(1) == 27: 
         break
 
 cv2.destroyAllWindows()
-
-# The Analyze() function will run analysis on every frame of the input video. 
-# It will create a rectangular box around every image and show the emotion values next to that.
-# Finally, the method will publish a new video that will have a box around the face of the human with live emotion values.
