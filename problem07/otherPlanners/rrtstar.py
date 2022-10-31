@@ -32,6 +32,7 @@ class RRTStar(RRT):
                  goal,
                  obstacle_list,
                  rand_area,
+                 play_area=None,
                  expand_dis=30.0,
                  path_resolution=1.0,
                  goal_sample_rate=20,
@@ -50,7 +51,7 @@ class RRTStar(RRT):
         """
         super().__init__(start, goal, obstacle_list, rand_area, expand_dis,
                          path_resolution, goal_sample_rate, max_iter,
-                         robot_radius=robot_radius)
+                         robot_radius=robot_radius, play_area=play_area)
         self.connect_circle_dist = connect_circle_dist
         self.goal_node = self.Node(goal[0], goal[1])
         self.search_until_max_iter = search_until_max_iter
@@ -65,7 +66,7 @@ class RRTStar(RRT):
 
         self.node_list = [self.start]
         for i in range(self.max_iter):
-            print("Iter:", i, ", number of nodes:", len(self.node_list))
+            # print("Iter:", i, ", number of nodes:", len(self.node_list))
             rnd = self.get_random_node()
             nearest_ind = self.get_nearest_node_index(self.node_list, rnd)
             new_node = self.steer(self.node_list[nearest_ind], rnd,
@@ -93,6 +94,7 @@ class RRTStar(RRT):
                     and new_node):  # if reaches goal
                 last_index = self.search_best_goal_node()
                 if last_index is not None:
+                    print("found goal")
                     return self.generate_final_course(last_index)
 
         print("reached max iteration")
