@@ -3,9 +3,10 @@ import math
 import matplotlib.pyplot as plt
 
 class HybridAStar:
-    def __init__(self, ox, oy, samplings, max_samplings):
+    def __init__(self, ox, oy, grid_size, samplings, max_samplings):
         self.obstacles = [Node(x, y, None) for x, y in zip(ox, oy)]
         self.open = []
+        self.grid_size = grid_size
         self.closed = self.obstacles
         self.samples = samplings
         self.max_samples = max_samplings
@@ -27,24 +28,26 @@ class HybridAStar:
 
         Also, sampling from skid-steer model...?
         """
-        samples = self._sample(self.samples)
 
         vehicle = SkidSteer(33, 40, sx, sy, 0)
 
         start = Node(sx, sy, None)
         goal = Node(gx, gy, None)
 
+        samples = self._sample(self.samples, goal)
+
         current = start
         self.open.append(samples)
 
         while len(self.open) > 0 and goal.parent is None:
-            if self._can_connect(current, goal):
+            print("iterating")
+            if self._can_connect(current, goal, vehicle):
                 goal.parent = current
                 break
 
-            if len(self.samples) == 0:
+            if len(samples) == 0:
                 if self.num_samples < self.max_samples:
-                    self._samples(self.samples)
+                    self._sample(self.samples)
                 else:
                     print(f"did not find goal within {max_samples} samples")
                     break
@@ -57,15 +60,17 @@ class HybridAStar:
 
             F = lambda x: x.G + x.H
 
-            self.samples.sort(key=F)
+            samples.sort(key=F)
 
             idx = 0
             next_node = None
-            while next_node is None or not self._can_connect(current, next_node):
-                next_node = self.samples[idx]
+            while next_node is None or not self._can_connect(current, next_node, vehicle):
+                print("iterating through samples")
+                print(next_node)
+                next_node = samples[idx]
                 idx += 1
 
-                if idx >= len(self.samples):
+                if idx >= len(samples):
                     print("No connecting paths")
                     return None, None
 
@@ -87,10 +92,10 @@ class HybridAStar:
 
     def _validate_sample(self, x, y):
         oSpaceX = [x.pos[0] for x in self.obstacles]
-        oSpaceY = [x.pos[1] for y in self.obstacles]
+        oSpaceY = [x.pos[1] for x in self.obstacles]
 
-        boolX = x > 0 and x < grid_size
-        boolY = y > 0 and y < grid_size
+        boolX = x > 0 and x < self.grid_size
+        boolY = y > 0 and y < self.grid_size
 
         return boolX and boolY and not \
     (x in oSpaceX and y in oSpaceY)
@@ -101,8 +106,8 @@ class HybridAStar:
             randX = -1
             randY = -1
             while not self._validate_sample(randX, randY):
-                randX = random.uniform(0, grid_size)
-                randY = random.uniform(0, grid_size)
+                randX = random.uniform(0, self.grid_size)
+                randY = random.uniform(0, self.grid_size)
 
             new_sample = Node(randX, randY, None)
             new_sample.H = math.sqrt((goal.pos[0] - new_sample.pos[0]) ** 2 + (goal.pos[1] - new_sample.pos[1]) **2)
@@ -136,6 +141,12 @@ class Node:
         self.G = 0
         self.H = 0
 
+    def __repr__(self):
+        return f"({self.pos[0]}, {self.pos[1]})"
+
+    def __str__(self):
+        return self.__repr__()
+
 
 class SkidSteer:
     def __init__(self, width, length, x, y, theta_init):
@@ -146,23 +157,23 @@ class SkidSteer:
         self.velocity = 5 # m/s (arbitrary)
 
     def move(self, x, y, resolution=0.1):
-        targetTheta = math.atan2((y - self.y) / (x - self.x))
+        targetTheta = math.atan2((y - self.pos[1]), (x - self.pos[0]))
         omega = 2 * self.velocity / self.width
         dt = (targetTheta - self.theta) / omega
         commands = [(self.velocity, -self.velocity, dt)]
         # now that we're pointing the right direction, go full speed to x and y
-        dist = math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
-        dt = dist / velocity
+        dist = math.sqrt((x - self.pos[0]) ** 2 + (y - self.pos[1]) ** 2)
+        dt = dist / self.velocity
 
         path = []
         for i in range(int(dt/resolution)):
-            path.append((distance/int(dt/resolution) * math.cos(targetTheta), distance/int(dt/resolution) * math.sin(targetTheta)))
+            path.append((dist/int(dt/resolution) * math.cos(targetTheta), dist/int(dt/resolution) * math.sin(targetTheta)))
         commands.append((self.velocity, self.velocity, dt))
         return path, commands
 
     def collision(self, node):
         check_width = node.pos[0] <= self.pos[0] + 0.5 * self.width or node.pos[0] >= self.pos[0] - 0.5 * self.width
-        check_height = node.pos[1] <= self.pos[1] + 0.5 * self.height or node.pos[1] >= self.pos[1] - 0.5 * self.height
+        check_height = node.pos[1] <= self.pos[1] + 0.5 * self.length or node.pos[1] >= self.pos[1] - 0.5 * self.length
         return check_width or check_height
 
 
@@ -170,27 +181,27 @@ class SkidSteer:
 
 def main():
     ox, oy = [], []
-    for i in range(-10, 60):
+    for i in range(60):
         ox.append(i)
-        oy.append(-10.0)
-    for i in range(-10, 60):
+        oy.append(0.0)
+    for i in range(60):
         ox.append(60.0)
         oy.append(i)
-    for i in range(-10, 61):
+    for i in range(61):
         ox.append(i)
         oy.append(60.0)
-    for i in range(-10, 61):
-        ox.append(-10.0)
+    for i in range(61):
+        ox.append(0.0)
         oy.append(i)
-    for i in range(-10, 40):
+    for i in range(40):
         ox.append(20.0)
         oy.append(i)
     for i in range(0, 40):
         ox.append(40.0)
         oy.append(60.0 - i)
 
-    sx = -5.0
-    sy = -5.0
+    sx = 5.0
+    sy = 5.0
     gx = 50.0
     gy = 50.0
 
@@ -202,7 +213,7 @@ def main():
         plt.grid(True)
         plt.axis("equal")
 
-    planner = HybridAStar(ox, oy, 10, 1000)
+    planner = HybridAStar(ox, oy, 60, 10, 1000)
     rx, ry = planner.planning(sx, sy, gx, gy)
 
     if show_animation:  # pragma: no cover
