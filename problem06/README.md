@@ -14,13 +14,11 @@ Watch the [example video](https://youtu.be/CKdoJ6MOMag) to see it work with one 
 ## Part D:
 All outputs for part D are in the folder `my_output`, which contains the processed live feeds of 2 people.
 ### Instructions:
-This is the same project as part two. It is modified to accept multiple subjects.
+This is the same scrit as part two. It is modified to accept multiple subjects.
 ```
 python b.py
 ```
-
-### Sample Stream:
-
+Watch the [example video](https://youtu.be/ijTBZYLy1Jc) to see it work with two subjects.
 
 ## Development Process:
 
