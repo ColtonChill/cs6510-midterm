@@ -18,6 +18,8 @@ For this problem, we implement a QNN agent to learn a modified cart-pole environ
 This problem focuses on applications of reinforcement learning, using the Cartpole and Half-Cheetah gym environments
 
 ## [Problem 6 - Human Emotions](problem06/)
+This problem leverages the `FER` module to preform facial tracking and emotion analysis.
+
 ## [Problem 7 - Motion Planning](problem07/)
 This problem focues on pathfinding algorithms, specifically A\*, both in a grid layout and in continuous space using random sampling
 
@@ -25,4 +27,4 @@ This problem focues on pathfinding algorithms, specifically A\*, both in a grid 
 Here, we use Facebook's `Detectron2` program to implement 3 different R-CNNs and retrain them to find a new object. These models are then tested and measured against each other.
 
 ## Problem 9 - Ethics of Robotics
-This problem solution is comprised solely of tables, figures, and descriptions. No code was needed here and all required information is found in the `Report.pdf`.
+This problem solution is comprised solely of tables, figures, and descriptions. No code was needed here and all required information is found in the `CS6510-Midterm.pdf`.
