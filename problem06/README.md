@@ -6,14 +6,23 @@ Open the file `Face_Emotion_Recognition_from_Videos.ipynb` in  your preferred no
 
 ## Part B:
 ### Instructions:
-
 ```py
 python b.py
 ```
 
+### Sample Stream:
+<iframe width=560 height="315" src="//youtu.be/CKdoJ6MOMag" frameboarder="0" allowfullscreen></iframe>
+
 ## Part D:
 All outputs for part D are in the folder `my_output`, which contains the processed live feeds of 2 people.
+### Instructions:
+This is the same project as part two. It is modified to accept multiple subjects.
+```
+python b.py
+```
 
+### Sample Stream:
+<iframe width=560 height="315" src="//youtu.be/ijTBZYLy1Jc" frameboarder="0" allowfullscreen></iframe>
 
 ## Development Process:
 
