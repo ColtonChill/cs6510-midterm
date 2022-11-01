@@ -27,4 +27,4 @@ This problem focues on pathfinding algorithms, specifically A\*, both in a grid 
 Here, we use Facebook's `Detectron2` program to implement 3 different R-CNNs and retrain them to find a new object. These models are then tested and measured against each other.
 
 ## Problem 9 - Ethics of Robotics
-This problem solution is comprised solely of tables, figures, and descriptions. No code was needed here and all required information is found in the `CS6510-Final.pdf`.
+This problem solution is comprised solely of tables, figures, and descriptions. No code was needed here and all required information is found in the `CS6510-Midterm.pdf`.
