@@ -11,7 +11,7 @@ python b.py
 ```
 
 ### Sample Stream:
-<iframe width=560 height="315" src="//youtu.be/CKdoJ6MOMag" frameboarder="0" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/CKdoJ6MOMag" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Part D:
 All outputs for part D are in the folder `my_output`, which contains the processed live feeds of 2 people.
@@ -22,7 +22,7 @@ python b.py
 ```
 
 ### Sample Stream:
-<iframe width=560 height="315" src="//youtu.be/ijTBZYLy1Jc" frameboarder="0" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ijTBZYLy1Jc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Development Process:
 
